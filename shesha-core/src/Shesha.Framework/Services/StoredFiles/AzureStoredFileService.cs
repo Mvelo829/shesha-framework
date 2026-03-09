@@ -53,8 +53,17 @@ namespace Shesha.Services.StoredFiles
                 var containerClient = new BlobContainerClient(GetConnectionString(), containerName);
                 containerClient.CreateIfNotExists();
 
-                // Setup the permissions on the container to be public
-                containerClient.SetAccessPolicy(PublicAccessType.BlobContainer);
+                // Try to set public access if allowed at the storage account level
+                // If public access is disabled, the container will still work with authenticated access
+                try
+                {
+                    containerClient.SetAccessPolicy(PublicAccessType.BlobContainer);
+                }
+                catch (Azure.RequestFailedException ex) when (ex.ErrorCode == "PublicAccessNotPermitted")
+                {
+                    // Public access is disabled at the storage account level - this is fine
+                    // Blobs will be accessible through authenticated requests (connection string, SAS tokens, etc.)
+                }
 
                 _blobContainerClient = containerClient;
                 return _blobContainerClient;

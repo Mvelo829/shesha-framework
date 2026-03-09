@@ -15,8 +15,7 @@ namespace Shesha.NHibernate.MsSql
                 db.ConnectionString = connectionString;
 
                 db.Dialect<MsSql2012Dialect>();
-                db.Driver<Sql2008ClientDriver>();
-
+                db.Driver<MicrosoftDataSqlClientDriver>();
                 db.Timeout = 150;
                 db.LogFormattedSql = true;
             });
